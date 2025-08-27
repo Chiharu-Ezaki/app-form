@@ -128,9 +128,9 @@
             <p class="text-sm text-red-500 mt-4 font-semibold" data-i18n="inputNote"></p>
         </header>
 
-        <!-- 
-          ↓↓↓ ここからフォーム ↓↓↓
-          action="YOUR_FORMSPREE_ENDPOINT" の部分を、後ほど取得する自分のFormspreeエンドポイントに書き換えてください。
+        <!--  
+            ↓↓↓ ここからフォーム ↓↓↓
+            action="YOUR_FORMSPREE_ENDPOINT" の部分を、後ほど取得する自分のFormspreeエンドポイントに書き換えてください。
         -->
         <form id="job-application-form" action="https://formspree.io/f/xpwjzebp" method="POST" enctype="multipart/form-data" class="space-y-8 p-6 bg-white rounded-lg shadow-xl">
 
@@ -181,42 +181,42 @@
                     <div class="input-group">
                         <label data-i18n="genderLabel" class="furigana-label"></label>
                         <div class="flex gap-4">
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="性別" value="男" class="form-radio" required>
-                                <span class="ml-2" data-i18n="genderMale"></span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="性別" value="女" class="form-radio" required>
-                                <span class="ml-2" data-i18n="genderFemale"></span>
-                            </label>
+                            <div class="inline-flex items-center">
+                                <input type="radio" id="genderMale" name="性別" value="男" class="form-radio" required>
+                                <label for="genderMale" class="ml-2" data-i18n="genderMale"></label>
+                            </div>
+                            <div class="inline-flex items-center">
+                                <input type="radio" id="genderFemale" name="性別" value="女" class="form-radio" required>
+                                <label for="genderFemale" class="ml-2" data-i18n="genderFemale"></label>
+                            </div>
                         </div>
                     </div>
 
                     <div class="input-group">
                         <label data-i18n="maritalStatusLabel" class="furigana-label"></label>
                         <div class="flex gap-4">
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="配偶者の有無" value="あり" class="form-radio" required>
-                                <span class="ml-2" data-i18n="statusYes"></span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="配偶者の有無" value="なし" class="form-radio" required>
-                                <span class="ml-2" data-i18n="statusNo"></span>
-                            </label>
+                            <div class="inline-flex items-center">
+                                <input type="radio" id="maritalStatusYes" name="配偶者の有無" value="あり" class="form-radio" required>
+                                <label for="maritalStatusYes" class="ml-2" data-i18n="statusYes"></label>
+                            </div>
+                            <div class="inline-flex items-center">
+                                <input type="radio" id="maritalStatusNo" name="配偶者の有無" value="なし" class="form-radio" required>
+                                <label for="maritalStatusNo" class="ml-2" data-i18n="statusNo"></label>
+                            </div>
                         </div>
                     </div>
 
                     <div class="input-group">
                         <label data-i18n="familyInJapanLabel" class="furigana-label"></label>
                         <div class="flex gap-4">
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="日本に家族・親族がいるか" value="あり" class="form-radio" required>
-                                <span class="ml-2" data-i18n="statusYes"></span>
-                            </label>
-                            <label class="inline-flex items-center">
-                                <input type="radio" name="日本に家族・親族がいるか" value="なし" class="form-radio" required>
-                                <span class="ml-2" data-i18n="statusNo"></span>
-                            </label>
+                            <div class="inline-flex items-center">
+                                <input type="radio" id="familyInJapanYes" name="日本に家族・親族がいるか" value="あり" class="form-radio" required>
+                                <label for="familyInJapanYes" class="ml-2" data-i18n="statusYes"></label>
+                            </div>
+                            <div class="inline-flex items-center">
+                                <input type="radio" id="familyInJapanNo" name="日本に家族・親族がいるか" value="なし" class="form-radio" required>
+                                <label for="familyInJapanNo" class="ml-2" data-i18n="statusNo"></label>
+                            </div>
                         </div>
                     </div>
 
@@ -270,12 +270,7 @@
                     <label for="desired-start" data-i18n="desiredStartLabel" class="furigana-label"></label>
                     <select id="desired-start" name="希望開始時期" required>
                         <option value="" disabled selected data-i18n="selectOption"></option>
-                        <script>
-                            const months = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-                            months.forEach(month => {
-                                document.write(`<option value="${month}か月後" data-i18n-text="startOption" data-i18n-args='[${month}]'></option>`);
-                            });
-                        </script>
+                        <!-- Options will be generated by JavaScript -->
                     </select>
                 </div>
             </section>
@@ -380,6 +375,33 @@
 
     </div>
 
+    <!-- Template for Work History -->
+    <template id="work-history-template">
+        <div class="work-history-entry space-y-4">
+            <div class="flex justify-end">
+                <button type="button" class="text-red-500 hover:text-red-700 remove-work-history-btn">削除（さくじょ）</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                    <label class="furigana-label"><span class="furigana">にゅうしゃび</span><span>入社日</span></label>
+                    <input type="date" name="start_date">
+                </div>
+                <div class="input-group">
+                    <label class="furigana-label"><span class="furigana">たいしゃび</span><span>退社日</span></label>
+                    <input type="date" name="end_date">
+                </div>
+            </div>
+            <div class="input-group">
+                <label class="furigana-label"><span class="furigana">かいしゃめい</span><span>会社名</span></label>
+                <input type="text" name="company_name" placeholder="株式会社〇〇">
+            </div>
+            <div class="input-group">
+                <label class="furigana-label"><span class="furigana">しごとないよう</span><span>仕事内容</span></label>
+                <textarea name="job_description" rows="3" placeholder="記入例：建設業（技能実習生）"></textarea>
+            </div>
+        </div>
+    </template>
+
     <script>
         // 言語ごとのコンテンツ
         const langContent = {
@@ -470,7 +492,6 @@
                 nativeAddressLabel: "Country address",
                 currentAddressLabel: "Current address",
                 workHistoryTitle: "Work History in Japan",
-                // ★変更箇所: 日本語版の内容に合わせる
                 workHistoryNote: "Please write down all of your work history",
                 addWorkHistory: "Add Work History",
                 desiredJobLabel: "Desired Job Category",
@@ -576,6 +597,17 @@
             const workHistoryContainer = document.getElementById('work-history-container');
             const addWorkHistoryBtn = document.getElementById('add-work-history-btn');
             
+            // Generate "Desired Start Time" options dynamically
+            const desiredStartSelect = document.getElementById('desired-start');
+            const months = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+            months.forEach(month => {
+                const option = document.createElement('option');
+                option.value = `${month}か月後`;
+                option.setAttribute('data-i18n-text', 'startOption');
+                option.setAttribute('data-i18n-args', `[${month}]`);
+                desiredStartSelect.appendChild(option);
+            });
+
             // Initial setup
             switchLanguage('ja');
             addWorkHistoryEntry(); // Add the first work history block
@@ -593,42 +625,40 @@
 
             function addWorkHistoryEntry() {
                 const entryCount = workHistoryContainer.querySelectorAll('.work-history-entry').length;
-                const newEntry = document.createElement('div');
-                newEntry.className = 'work-history-entry space-y-4';
-                
+                const template = document.getElementById('work-history-template');
+                const newEntryFragment = template.content.cloneNode(true);
+                const newEntry = newEntryFragment.firstElementChild; // Get the actual div element
+
+                // Update name attributes to be unique
+                newEntry.querySelectorAll('[name]').forEach(input => {
+                    const originalName = input.getAttribute('name');
+                    input.setAttribute('name', `work_history[${entryCount}][${originalName}]`);
+                });
+
+                // Set placeholder based on current language
                 const currentLang = document.documentElement.lang || 'ja';
                 const jobPlaceholder = currentLang === 'ja' 
                     ? "記入例：建設業（技能実習生）" 
                     : "Example: Construction industry (Technical Intern Trainee)";
+                newEntry.querySelector('[name*="[job_description]"]').placeholder = jobPlaceholder;
 
-                newEntry.innerHTML = `
-                    ${entryCount > 0 ? '<div class="flex justify-end"><button type="button" class="text-red-500 hover:text-red-700 remove-work-history-btn">削除（さくじょ）</button></div>' : ''}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="input-group">
-                            <label class="furigana-label"><span class="furigana">にゅうしゃび</span><span>入社日</span></label>
-                            <input type="date" name="work_history[${entryCount}][start_date]">
-                        </div>
-                        <div class="input-group">
-                            <label class="furigana-label"><span class="furigana">たいしゃび</span><span>退社日</span></label>
-                            <input type="date" name="work_history[${entryCount}][end_date]">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label class="furigana-label"><span class="furigana">かいしゃめい</span><span>会社名</span></label>
-                        <input type="text" name="work_history[${entryCount}][company_name]" placeholder="株式会社〇〇">
-                    </div>
-                    <div class="input-group">
-                        <label class="furigana-label"><span class="furigana">しごとないよう</span><span>仕事内容</span></label>
-                        <textarea name="work_history[${entryCount}][job_description]" rows="3" placeholder="${jobPlaceholder}"></textarea>
-                    </div>
-                `;
-                workHistoryContainer.appendChild(newEntry);
+                // Remove the delete button for the first entry
+                if (entryCount === 0) {
+                    const firstRemoveBtn = newEntry.querySelector('.remove-work-history-btn');
+                    if (firstRemoveBtn) {
+                        firstRemoveBtn.remove();
+                    }
+                }
+                
+                // Add event listener to the remove button
                 const removeBtn = newEntry.querySelector('.remove-work-history-btn');
-                if(removeBtn) {
-                    removeBtn.addEventListener('click', () => {
-                        newEntry.remove();
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', (e) => {
+                        e.target.closest('.work-history-entry').remove();
                     });
                 }
+
+                workHistoryContainer.appendChild(newEntry);
             }
 
             fileInputs.forEach(input => {
