@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外国人向け求人応募フォーム - Foreigner Job Application Form</title>
+    <!-- InterフォントとTailwind CSSを読み込む -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        .section-header {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+        }
+        .input-group label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            transition: all 0.2s;
+            box-sizing: border-box; /* paddingを含めて幅を計算 */
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+        .language-switcher button {
+            transition: transform 0.2s;
+            /* パディングを小さくしてボタンのサイズを調整 */
+            padding: 0.5rem 1rem;
+        }
+        .language-switcher button:hover {
+            transform: translateY(-2px);
+        }
+        .language-switcher button.active {
+            border: 2px solid #3b82f6;
+            background-color: #dbeafe;
+        }
+        .file-upload-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        @media (max-width: 640px) {
+            .file-upload-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        .file-upload-item {
+            border: 2px dashed #9ca3af;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .file-upload-item:hover {
+            background-color: #e5e7eb;
+            border-color: #6b7280;
+        }
+        .file-upload-item input[type="file"] {
+            display: none;
+        }
+        .file-upload-item.selected {
+            background-color: #dcfce7;
+            border-color: #10b981;
+        }
+        .submit-button {
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .submit-button:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .furigana-label {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .furigana {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: -0.25rem;
+            line-height: 1;
+        }
+        .work-history-entry {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .remove-work-history-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container">
+        <!-- 言語切り替えボタン -->
+        <div class="language-switcher flex justify-end flex-wrap gap-2 mb-8">
+            <button class="px-4 py-2 bg-white rounded-full shadow-md active" data-lang="ja">日本語</button>
+            <button class="px-4 py-2 bg-white rounded-full shadow-md" data-lang="en">English</button>
+        </div>
+
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-bold mb-2" data-i18n="formTitle"></h1>
+            <p class="text-gray-600" data-i18n="formSubtitle"></p>
+            <p class="text-sm text-red-500 mt-4 font-semibold" data-i18n="inputNote"></p>
+        </header>
+
+        <!-- 
+          ↓↓↓ ここからフォーム ↓↓↓
+          action="YOUR_FORMSPREE_ENDPOINT" の部分を、後ほど取得する自分のFormspreeエンドポイントに書き換えてください。
+        -->
+        <form id="job-application-form" action="https://formspree.io/f/xpwjzebp" method="POST" enctype="multipart/form-data" class="space-y-8 p-6 bg-white rounded-lg shadow-xl">
+
+            <!-- 1. 基本情報 -->
+            <section>
+                <h2 class="text-2xl font-bold section-header mb-6" data-i18n="section1Title"></h2>
+                <div class="space-y-4">
+                    <div class="input-group">
+                        <label for="name" data-i18n="nameLabel" class="furigana-label"></label>
+                        <input type="text" id="name" name="名前" required placeholder="山田 太郎">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="gmail" data-i18n="gmailLabel" class="furigana-label"></label>
+                        <input type="email" id="gmail" name="Gmailアドレス" placeholder="example@gmail.com">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="nationality" data-i18n="nationalityLabel" class="furigana-label"></label>
+                        <select id="nationality" name="国籍" required>
+                            <option value="" disabled selected data-i18n="selectOption"></option>
+                            <option value="インドネシア" data-i18n="nationalityIndonesia"></option>
+                            <option value="カンボジア" data-i18n="nationalityCambodia"></option>
+                            <option value="ベトナム" data-i18n="nationalityVietnam"></option>
+                            <option value="ミャンマー" data-i18n="nationalityMyanmar"></option>
+                            <option value="ネパール" data-i18n="nationalityNepal"></option>
+                            <option value="その他" data-i18n="nationalityOther"></option>
+                        </select>
+                        <input type="text" id="nationality-other-input" name="国籍（その他）" class="mt-2 hidden" placeholder="国籍を入力してください">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="contact-method" data-i18n="contactLabel" class="furigana-label"></label>
+                        <select id="contact-method" name="連絡方法" class="mb-2" required>
+                            <option value="" disabled selected data-i18n="selectOption"></option>
+                            <option value="LINE ID">LINE ID</option>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Messenger">Messenger</option>
+                        </select>
+                        <input type="text" id="contact-info" name="連絡先情報" required placeholder="アカウント名 または ID">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="dob" data-i18n="dobLabel" class="furigana-label"></label>
+                        <input type="date" id="dob" name="生年月日" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label data-i18n="genderLabel" class="furigana-label"></label>
+                        <div class="flex gap-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="性別" value="男" class="form-radio" required>
+                                <span class="ml-2" data-i18n="genderMale"></span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="性別" value="女" class="form-radio" required>
+                                <span class="ml-2" data-i18n="genderFemale"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label data-i18n="maritalStatusLabel" class="furigana-label"></label>
+                        <div class="flex gap-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="配偶者の有無" value="あり" class="form-radio" required>
+                                <span class="ml-2" data-i18n="statusYes"></span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="配偶者の有無" value="なし" class="form-radio" required>
+                                <span class="ml-2" data-i18n="statusNo"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label data-i18n="familyInJapanLabel" class="furigana-label"></label>
+                        <div class="flex gap-4">
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="日本に家族・親族がいるか" value="あり" class="form-radio" required>
+                                <span class="ml-2" data-i18n="statusYes"></span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" name="日本に家族・親族がいるか" value="なし" class="form-radio" required>
+                                <span class="ml-2" data-i18n="statusNo"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="native-address" data-i18n="nativeAddressLabel" class="furigana-label"></label>
+                        <textarea id="native-address" name="母国の住所" rows="3" required></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="current-address" data-i18n="currentAddressLabel" class="furigana-label"></label>
+                        <textarea id="current-address" name="現在の住所" rows="3" required></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 職務経歴・希望条件 -->
+            <section>
+                <h2 class="text-2xl font-bold section-header mb-6" data-i18n="section2Title"></h2>
+                
+                <h3 class="text-xl font-semibold mb-2" data-i18n="workHistoryTitle"></h3>
+                <p class="text-sm text-gray-500 mb-4" data-i18n="workHistoryNote"></p>
+                <div id="work-history-container" class="space-y-4">
+                    <!-- Work history entries will be added here by JavaScript -->
+                </div>
+                <button type="button" id="add-work-history-btn" class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200" data-i18n="addWorkHistory"></button>
+
+                <div class="input-group mt-8">
+                    <label for="desired-job" data-i18n="desiredJobLabel" class="furigana-label"></label>
+                    <select id="desired-job" name="希望職種" required>
+                        <option value="" disabled selected data-i18n="selectOption"></option>
+                        <option value="介護業" data-i18n="jobCaregiving"></option>
+                        <option value="ビルクリーニング業" data-i18n="jobBuildingCleaning"></option>
+                        <option value="工業製品製造業" data-i18n="jobIndustrialProduct"></option>
+                        <option value="建設業" data-i18n="jobConstruction"></option>
+                        <option value="造船・舶用工業" data-i18n="jobShipbuilding"></option>
+                        <option value="自動車整備業" data-i18n="jobAutomotive"></option>
+                        <option value="航空業" data-i18n="jobAviation"></option>
+                        <option value="宿泊業" data-i18n="jobHospitality"></option>
+                        <option value="農業" data-i18n="jobAgriculture"></option>
+                        <option value="漁業" data-i18n="jobFisheries"></option>
+                        <option value="飲食料品製造業" data-i18n="jobFoodManufacturing"></option>
+                        <option value="外食業" data-i18n="jobFoodService"></option>
+                        <option value="林業" data-i18n="jobForestry"></option>
+                        <option value="木材産業" data-i18n="jobWood"></option>
+                        <option value="自動車運送業" data-i18n="jobAutomotiveTransport"></option>
+                        <option value="鉄道" data-i18n="jobRailway"></option>
+                    </select>
+                </div>
+
+                <div class="input-group mt-4">
+                    <label for="desired-start" data-i18n="desiredStartLabel" class="furigana-label"></label>
+                    <select id="desired-start" name="希望開始時期" required>
+                        <option value="" disabled selected data-i18n="selectOption"></option>
+                        <script>
+                            const months = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+                            months.forEach(month => {
+                                document.write(`<option value="${month}か月後" data-i18n-text="startOption" data-i18n-args='[${month}]'></option>`);
+                            });
+                        </script>
+                    </select>
+                </div>
+            </section>
+
+            <!-- 3. 添付書類 -->
+            <section>
+                <h2 class="text-2xl font-bold section-header mb-6" data-i18n="section3Title"></h2>
+                <p class="text-sm text-gray-500 mb-2" data-i18n="documentNote"></p>
+                <p class="text-sm text-gray-500 mb-6 p-4 bg-gray-50 rounded-lg" data-i18n="documentDetails"></p>
+                <p class="text-sm text-gray-500 mb-6" data-i18n="docOtherNote"></p>
+
+                <div class="file-upload-section">
+                    <div class="file-upload-item" data-file-for="photo">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="photo" accept="image/*">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docPhoto"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="passport">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="passport" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docPassport"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                     <div class="file-upload-item" data-file-for="residenceCard">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="residence_card" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docResidenceCard"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="resume">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="resume" accept=".pdf,.doc,.docx">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docResume"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="tokuteiGino">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="tokutei_gino_certificate" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docTokuteiGino"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="medical">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="medical_certificate" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docMedical"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="gensenChoshu">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="tax_slip" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docGensenChoshu"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="other1">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="other_document_1" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docOther1"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="other2">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="other_document_2" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docOther2"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                    <div class="file-upload-item" data-file-for="other3">
+                        <label class="cursor-pointer block h-full">
+                            <input type="file" name="other_document_3" accept="image/*,.pdf">
+                            <div class="text-gray-500 text-lg">📁</div>
+                            <span class="block mt-1" data-i18n="docOther3"></span>
+                            <span class="block text-xs text-gray-400 file-status" data-i18n="fileStatusUnselected"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="flex justify-center mt-8">
+                <button type="submit" class="submit-button bg-blue-500 text-white font-bold py-3 px-12 rounded-full shadow-lg">
+                    <span data-i18n="submitButton"></span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <script>
+        // 言語ごとのコンテンツ
+        const langContent = {
+            ja: {
+                formTitle: "外国人向（がいこくじんむ）け求人応募（きゅうじんおうぼ）フォーム",
+                formSubtitle: "日本（にほん）での就職（しゅうしょく）を希望（きぼう）される方（かた）のためのフォームです。",
+                inputNote: "※記入（きにゅう）する内容（ないよう）は、可能（かのう）であれば日本語（にほんご）で、難（むずか）しい場合（ばあい）は母国語（ぼこくご）またはローマ字（じ）でも大丈夫（だいじょうぶ）です。",
+                section1Title: "１．基本情報（きほんじょうほう）",
+                section2Title: "２．仕事（しごと）の経験（けいけん）・希望条件（きぼうじょうけん）",
+                section3Title: "３．書類（しょるい）",
+                nameLabel: "<span class='furigana'>なまえ</span><span>名前</span>",
+                gmailLabel: "<span class='furigana'>Gメールアドレス</span><span>Gmail アドレス</span>",
+                nationalityLabel: "<span class='furigana'>あなたのくにをおしえてください</span><span>あなたの国をおしえてください</span>",
+                contactLabel: "<span class='furigana'>れんらくさき</span><span>連絡先</span>",
+                dobLabel: "<span class='furigana'>せいねんがっぴ</span><span>生年月日</span>",
+                genderLabel: "<span class='furigana'>せいべつ</span><span>性別</span>",
+                genderMale: "男（おとこ）",
+                genderFemale: "女（おんな）",
+                maritalStatusLabel: "<span class='furigana'>はいぐうしゃのうむ</span><span>配偶者の有無</span>",
+                familyInJapanLabel: "<span class='furigana'>にほんにかぞく・しんぞくのうむ</span><span>日本に家族・親族がいるか</span>",
+                nativeAddressLabel: "<span class='furigana'>くにのじゅうしょ</span><span>国の住所</span>",
+                currentAddressLabel: "<span class='furigana'>いますんでいるじゅうしょ</span><span>今すんでいる 住所</span>",
+                workHistoryTitle: "日本（にほん）での仕事（しごと）の経験（けいけん）",
+                workHistoryNote: "全（すべ）て 書（か）いてください",
+                addWorkHistory: "職歴（しょくれき）を追加（ついか）",
+                desiredJobLabel: "<span class='furigana'>きぼうのしごと</span><span>希望のしごと</span>",
+                desiredStartLabel: "<span class='furigana'>あたらしいかいしゃでしごとをはじめたいひ</span><span>新しい会社で仕事を始めたい日</span>",
+                jobCaregiving: "介護業（かいごぎょう）",
+                jobBuildingCleaning: "ビルクリーニング業（ぎょう）",
+                jobIndustrialProduct: "工業製品製造業（こうぎょうせいひんせいぞうぎょう）",
+                jobConstruction: "建設業（けんせつぎょう）",
+                jobShipbuilding: "造船（ぞうせん）・舶用工業（はくようこうぎょう）",
+                jobAutomotive: "自動車整備業（じどうしゃせいびぎょう）",
+                jobAviation: "航空業（こうくうぎょう）",
+                jobHospitality: "宿泊業（しゅくはくぎょう）",
+                jobAgriculture: "農業（のうぎょう）",
+                jobFisheries: "漁業（ぎょぎょう）",
+                jobFoodManufacturing: "飲食料品製造業（いんしょくりょうひんせいぞうぎょう）",
+                jobFoodService: "外食業（がいしょくぎょう）",
+                jobForestry: "林業（りんぎょう）",
+                jobWood: "木材産業（もくざいさんぎょう）",
+                jobAutomotiveTransport: "自動車運送業（じどうしゃうんそうぎょう）",
+                jobRailway: "鉄道（てつどう）",
+                startOption: (months) => `${months}か月後（かげつご）`,
+                documentNote: "※現在（げんざい）お持（も）ちの書類（しょるい）のみアップロードしてください。",
+                documentDetails: "<strong>添付（てんぷ）できるファイル</strong><br><strong>顔写真（かおじゃしん）:</strong> JPEG, PNGなどの画像（がぞう）ファイル<br><strong>履歴書（りれきしょ）:</strong> PDF, Wordファイル (.doc, .docx)<br><strong>その他（た）の書類（しょるい）:</strong> JPEG, PNGなどの画像（がぞう）ファイルとPDFファイル",
+                docOtherNote: "ほかに、出（だ）したい書類（しょるい）がある場合（ばあい）は、そのほかの書類（しょるい）にアップロードしてください。",
+                docPhoto: "1. 顔写真",
+                docPassport: "2. パスポートのコピー",
+                docResidenceCard: "3. 在留カードのコピー",
+                docResume: "4. 履歴書",
+                docTokuteiGino: "5. 特定技能合格証",
+                docMedical: "6. 健康診断書",
+                docGensenChoshu: "7. 源泉徴収票",
+                docOther1: "8. その他の書類 1",
+                docOther2: "9. その他の書類 2",
+                docOther3: "10. その他の書類 3",
+                submitButton: "送信（そうしん）する",
+                selectOption: "選（えら）んでください",
+                nationalityIndonesia: "インドネシア",
+                nationalityCambodia: "カンボジア",
+                nationalityVietnam: "ベトナム",
+                nationalityMyanmar: "ミャンマー",
+                nationalityNepal: "ネパール",
+                nationalityOther: "ここにはない",
+                statusYes: "あり",
+                statusNo: "なし",
+                fileStatusUnselected: "選択（せんたく）されていません",
+                fileStatusSelected: "選択済（せんたくず）み",
+            },
+            en: {
+                formTitle: "Foreigner Job Application Form",
+                formSubtitle: "This form is for those who wish to find a job in Japan.",
+                inputNote: "※The content can be written in your native language or in Roman letters if writing in Japanese is difficult.",
+                section1Title: "1. Basic Information",
+                section2Title: "2. Work History & Desired Conditions",
+                section3Title: "3. Attached Documents",
+                nameLabel: "Name",
+                gmailLabel: "Gmail address",
+                nationalityLabel: "Nationality",
+                contactLabel: "Contact Information",
+                dobLabel: "Date of Birth",
+                genderLabel: "Gender",
+                genderMale: "Male",
+                genderFemale: "Female",
+                maritalStatusLabel: "Marital Status",
+                familyInJapanLabel: "Do you have family or relatives in Japan?",
+                nativeAddressLabel: "Country address",
+                currentAddressLabel: "Current address",
+                workHistoryTitle: "Work History in Japan",
+                // ★変更箇所: 日本語版の内容に合わせる
+                workHistoryNote: "Please write down all of your work history",
+                addWorkHistory: "Add Work History",
+                desiredJobLabel: "Desired Job Category",
+                desiredStartLabel: "Desired Start Time",
+                jobCaregiving: "Caregiving",
+                jobBuildingCleaning: "Building Cleaning",
+                jobIndustrialProduct: "Industrial Product Manufacturing",
+                jobConstruction: "Construction",
+                jobShipbuilding: "Shipbuilding & Marine Industry",
+                jobAutomotive: "Automobile Maintenance",
+                jobAviation: "Aviation",
+                jobHospitality: "Accommodation",
+                jobAgriculture: "Agriculture",
+                jobFisheries: "Fisheries & Aquaculture",
+                jobFoodManufacturing: "Food & Beverage Manufacturing",
+                jobFoodService: "Food Service Industry",
+                jobForestry: "Forestry",
+                jobWood: "Wood Industry",
+                jobAutomotiveTransport: "Automotive Transport Industry",
+                jobRailway: "Railway",
+                startOption: (months) => `${months} months later`,
+                documentNote: "※Please upload only the documents you currently possess.",
+                documentDetails: "<strong>Acceptable Files</strong><br><strong>Photo:</strong> Image files (JPEG, PNG)<br><strong>Resume (CV):</strong> PDF, Word files (.doc, .docx)<br><strong>Other Documents:</strong> Image files (JPEG, PNG) and PDF files",
+                docOtherNote: "If you have other documents to submit, please upload them here.",
+                docPhoto: "1. ID photo",
+                docPassport: "2. Passport copy",
+                docResidenceCard: "3. Residence card copy",
+                docResume: "4. Resume",
+                docTokuteiGino: "5. Specified Skilled Worker Certificate",
+                docMedical: "6. Medical Certificate",
+                docGensenChoshu: "7. Withholding Tax Slip",
+                docOther1: "8. Other Document 1",
+                docOther2: "9. Other Document 2",
+                docOther3: "10. Other Document 3",
+                submitButton: "Submit",
+                selectOption: "Please select",
+                nationalityIndonesia: "Indonesia",
+                nationalityCambodia: "Cambodia",
+                nationalityVietnam: "Vietnam",
+                nationalityMyanmar: "Myanmar",
+                nationalityNepal: "Nepal",
+                nationalityOther: "Other",
+                statusYes: "Yes",
+                statusNo: "No",
+                fileStatusUnselected: "No file selected",
+                fileStatusSelected: "File selected",
+            }
+        };
+
+        // Function to switch language
+        function switchLanguage(lang) {
+            const content = langContent[lang];
+            if (!content) return;
+
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (content[key] && typeof content[key] === 'string') {
+                    element.innerHTML = content[key];
+                }
+            });
+
+            const placeholders = {
+                ja: { 
+                    "name": "山田 太郎", 
+                    "contact-info": "アカウント名 または ID",
+                    "native-address": "記入例：インドネシア チルボン",
+                    "current-address": "記入例：東京都新宿区西新宿1-1-1 〇〇マンション101号"
+                },
+                en: { 
+                    "name": "John Doe", 
+                    "contact-info": "Account name or ID",
+                    "native-address": "Example: Indonesia Cirebon",
+                    "current-address": "Example: Tokyo-to, Shinjuku-ku, Nishi-Shinjuku 1-1-1 ○○ Mansion Room 101"
+                }
+            };
+            const currentPlaceholders = placeholders[lang] || {};
+            for (const id in currentPlaceholders) {
+                const input = document.getElementById(id);
+                if (input) input.placeholder = currentPlaceholders[id];
+            }
+
+            const desiredStartSelect = document.getElementById('desired-start');
+            desiredStartSelect.querySelectorAll('option[data-i18n-text]').forEach(option => {
+                const key = option.getAttribute('data-i18n-text');
+                const args = JSON.parse(option.getAttribute('data-i18n-args'));
+                if (typeof content[key] === 'function') {
+                    option.textContent = content[key](...args);
+                }
+            });
+
+            document.querySelectorAll('.language-switcher button').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+            });
+            document.documentElement.lang = lang;
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('job-application-form');
+            const languageButtons = document.querySelectorAll('.language-switcher button');
+            const fileInputs = document.querySelectorAll('.file-upload-item input[type="file"]');
+            const nationalitySelect = document.getElementById('nationality');
+            const nationalityOtherInput = document.getElementById('nationality-other-input');
+            const workHistoryContainer = document.getElementById('work-history-container');
+            const addWorkHistoryBtn = document.getElementById('add-work-history-btn');
+            
+            // Initial setup
+            switchLanguage('ja');
+            addWorkHistoryEntry(); // Add the first work history block
+
+            // Event Listeners
+            languageButtons.forEach(button => {
+                button.addEventListener('click', () => switchLanguage(button.getAttribute('data-lang')));
+            });
+
+            nationalitySelect.addEventListener('change', (e) => {
+                nationalityOtherInput.classList.toggle('hidden', e.target.value !== 'その他');
+            });
+
+            addWorkHistoryBtn.addEventListener('click', addWorkHistoryEntry);
+
+            function addWorkHistoryEntry() {
+                const entryCount = workHistoryContainer.querySelectorAll('.work-history-entry').length;
+                const newEntry = document.createElement('div');
+                newEntry.className = 'work-history-entry space-y-4';
+                
+                const currentLang = document.documentElement.lang || 'ja';
+                const jobPlaceholder = currentLang === 'ja' 
+                    ? "記入例：建設業（技能実習生）" 
+                    : "Example: Construction industry (Technical Intern Trainee)";
+
+                newEntry.innerHTML = `
+                    ${entryCount > 0 ? '<div class="flex justify-end"><button type="button" class="text-red-500 hover:text-red-700 remove-work-history-btn">削除（さくじょ）</button></div>' : ''}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <label class="furigana-label"><span class="furigana">にゅうしゃび</span><span>入社日</span></label>
+                            <input type="date" name="work_history[${entryCount}][start_date]">
+                        </div>
+                        <div class="input-group">
+                            <label class="furigana-label"><span class="furigana">たいしゃび</span><span>退社日</span></label>
+                            <input type="date" name="work_history[${entryCount}][end_date]">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label class="furigana-label"><span class="furigana">かいしゃめい</span><span>会社名</span></label>
+                        <input type="text" name="work_history[${entryCount}][company_name]" placeholder="株式会社〇〇">
+                    </div>
+                    <div class="input-group">
+                        <label class="furigana-label"><span class="furigana">しごとないよう</span><span>仕事内容</span></label>
+                        <textarea name="work_history[${entryCount}][job_description]" rows="3" placeholder="${jobPlaceholder}"></textarea>
+                    </div>
+                `;
+                workHistoryContainer.appendChild(newEntry);
+                const removeBtn = newEntry.querySelector('.remove-work-history-btn');
+                if(removeBtn) {
+                    removeBtn.addEventListener('click', () => {
+                        newEntry.remove();
+                    });
+                }
+            }
+
+            fileInputs.forEach(input => {
+                input.addEventListener('change', (e) => {
+                    const statusSpan = e.target.closest('label').querySelector('.file-status');
+                    const uploadItem = e.target.closest('.file-upload-item');
+                    const currentLang = document.documentElement.lang;
+                    
+                    if (e.target.files.length > 0) {
+                        statusSpan.textContent = langContent[currentLang].fileStatusSelected;
+                        statusSpan.style.color = '#10b981';
+                        uploadItem.classList.add('selected');
+                    } else {
+                        statusSpan.textContent = langContent[currentLang].fileStatusUnselected;
+                        statusSpan.style.color = '#9ca3af';
+                        uploadItem.classList.remove('selected');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
